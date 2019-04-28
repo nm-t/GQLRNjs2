@@ -35,7 +35,8 @@ const Movie: React.FC<MovieProps> = ({ match }) => {
           if (error) return <div>{error}</div>
 
           return <MoviePage movie={
-          data.movie}/>
+            data.movie
+          }/>
         }
       }
       </Query>
