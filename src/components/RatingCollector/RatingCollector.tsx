@@ -53,7 +53,7 @@ const RatingCollector: React.FC<{ movieId: string }> = ({ movieId }) => {
     >
       {({ data }) => {
         const userScore = 
-            data && data.movieUserRating && data.movieUserRating.score;
+            data && data.movieUserRating && data.movieUserRating.score || score; // || score shows local value (so when you rate a movie, you can immediately see what you rated it as.)
 
           return userScore ? (
             <div>
