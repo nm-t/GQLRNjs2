@@ -20,7 +20,7 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "isolatedModules": true,
-    "strict": true
+    "strict": false
   },
   "exclude": [
     "node_modules",
