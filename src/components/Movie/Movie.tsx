@@ -4,12 +4,11 @@ import sampleMovies from "../../data/sampleMovies";
 import BackToHome from "../UIComponents/BackToHome";
 import MoviePage from "./MoviePage";
 
-// TODO:
 // 1. use { Query } component provided by "react-apollo"
+import { Query } from "react-apollo";
+
 // 2. write query for movieList, defined in query.ts
-// 3. pass GraphQL query into Query component as the field of query
-// 4. Query will inject three props: data, loading, error
-// 5. Handle loading/error situations
+import { GET_MOVIE } from './query';
 
 interface MovieParams {
   id: string;
@@ -26,7 +25,20 @@ const Movie: React.FC<MovieProps> = ({ match }) => {
   return (
     <>
       <BackToHome />
-      {movie && <MoviePage movie={movie} />}
+      {/* // 3. pass GraphQL query into Query component as the field of query */}
+      <Query query = { GET_MOVIE } variables = {{ id: match.params.id }}>
+      {
+        // 4. Query will inject three props: data, loading, error
+        ({data, loading, error}) => {
+          // 5. Handle loading/error situations
+          if (loading) return <div>Loading...</div>
+          if (error) return <div>{error}</div>
+
+          return <MoviePage movie={
+          data.movie}/>
+        }
+      }
+      </Query>
     </>
   );
 };
