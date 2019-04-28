@@ -25,8 +25,16 @@ const SET_RATING = gql`
   }
 `;
 
+const GET_RATING = gql`
+  query getRating($getRatingInput: GetRatingInput!) {
+    movieUserRating(getRatingInput: $getRatingInput) {
+      score
+    }
+  }
+`;
+
 // 3. use { Mutation } component provided by "react-apollo"
-import { Mutation } from 'react-apollo';
+import { Mutation, Query } from 'react-apollo';
 
 const RatingCollector: React.FC<{ movieId: string }> = ({ movieId }) => {
   // These are React hooks! They reduce the need for React Classes (and are much faster).
@@ -38,41 +46,49 @@ const RatingCollector: React.FC<{ movieId: string }> = ({ movieId }) => {
     setUserId(getUserId()!);
   });
 
-  console.log(userId)
+  return userId ? (
+    <Query 
+      query = { GET_RATING } 
+      variables={{ getRatingInput: { movieId, userId } }}
+    >
+      {({ data }) => {
+        const userScore = 
+            data && data.movieUserRating && data.movieUserRating.score;
 
-  return (
-    <div>
-      {score ? (
-        <div>
-          <Star nativeColor="#ff9800" />
-          <span> Your Rating: {score}</span>
-        </div>
-      ) : (
-        // 4. pass GraphQL mutation into Mutation component as the field of mutation
-        <Mutation mutation={ SET_RATING }>
-          {
-            (setRating) => {
-              // Set local and remote states
-              const onSetRating = (score: number) => {
-                setRatingScore(score); // local
-                setRating({ //remote
-                  variables: {
-                    setRatingInput: {
-                      movieId,
-                      userId,
-                      score
-                    }
+          return userScore ? (
+            <div>
+              <Star nativeColor="#ff9800" />
+              <span> Your Rating: { userScore }</span>
+            </div>
+          ) : (
+            // 4. pass GraphQL mutation into Mutation component as the field of mutation
+            <Mutation mutation={ SET_RATING }>
+              {
+                (setRating) => {
+                  // Set local and remote states
+                  const onSetRating = (score: number) => {
+                    setRatingScore(score); // Set local
+                    setRating({ // Set remote
+                      variables: {
+                        setRatingInput: {
+                          movieId,
+                          userId,
+                          score
+                        }
+                      }
+                    })
                   }
-                })
+                  // 5. You can use your mutation within the mutation component as props Rating Mutator
+                  return <RatingStars onSetRating={onSetRating} />
+                }
               }
-              // 5. You can use your mutation within the mutation component as props Rating Mutator
-              return <RatingStars onSetRating={onSetRating} />
-            }
-          }
-        </Mutation>
-      )}
-    </div>
-  );
+            </Mutation>
+          )
+        }
+      }
+
+    </Query>
+  ) : null;
 };
 
 export default RatingCollector;
