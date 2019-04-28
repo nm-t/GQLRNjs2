@@ -23,10 +23,10 @@ interface MovieProps {
 const Movie: React.FC<MovieProps> = ({ match }) => {
   const movie = sampleMovies.find(item => match.params.id === item.id);
   return (
+    // 3. pass GraphQL query into Query component as the field of query
     <>
-      <BackToHome />
-      {/* // 3. pass GraphQL query into Query component as the field of query */}
-      <Query query = { GET_MOVIE } variables = {{ id: match.params.id }}>
+    <BackToHome />
+    <Query query = { GET_MOVIE } variables = {{ id: match.params.id }}>
       {
         // 4. Query will inject three props: data, loading, error
         ({data, loading, error}) => {
